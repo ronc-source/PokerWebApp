@@ -32,3 +32,26 @@ app.get('/', function(req, res){
 app.use('/client', express.static(__dirname + '/client'));
 
 serv.listen(2000);
+console.log("Server started");
+
+/*
+-Code to do package communication with socket.io library
+-Whenever there is a connection the anonymous function 'function(socket)' will be called to display 'socket connection' in CMD
+*/
+var io = require('socket.io')(serv,{});
+io.sockets.on('connection', function(socket){
+  console.log('socket connection');
+
+  /* EXAMPLE CODE:
+  -Listens for a message under the string 'happy' and any other data passed as a second
+   parameter form the html page will be called under the anonymous function 'function(data)'
+  -This works both ways, as the client can use socket.on to receive a message from the server
+   and the server can use socket.emit to send a message to the client and vice versa
+   */
+
+  socket.on('happy', function(data){
+    console.log('Happy because ' + data.reason);
+  });
+  
+
+})

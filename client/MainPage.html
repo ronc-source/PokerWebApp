@@ -1,1 +1,40 @@
-Hello world
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset = "utf-8">
+    <!-- Script for websocket communication, using the socket.io library to request a certain file-->
+    <script src = "https://cdn.socket.io/socket.io-1.4.5.js">
+    </script>
+    <!-- second script to initialize websocket connection between client and server-->
+    <script>
+      //Important code to setup a socket connection for whoever accesses the client web page
+      var socket = io();
+
+      /*EXAMPLE CODE
+      -send messages to the server under the string 'happy'
+
+      socket.emit('happy', {
+        reason: 'Its my birthday'
+      });
+
+      */
+
+      /*EXAMPLE CODE
+      - Function to send messages to the server; will be used with a button to send these messages
+      */
+      var happy = function(){
+        socket.emit('happy', {
+          reason: 'Its my birthday'
+        });
+      }
+
+    </script>
+  </head>
+
+  <body>
+    <!-- Call the variable assigned function 'happy' when the button is clicked to send a message to the server -->
+    <button onclick = "happy()">
+      Happy
+    </button>
+  </body>
+</html>
