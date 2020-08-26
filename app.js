@@ -45,18 +45,30 @@ var SOCKET_LIST = {};
 var io = require('socket.io')(serv,{});
 io.sockets.on('connection', function(socket){
   socket.id = Math.floor(1 + (1000 * Math.random()));
+  socket.atSeat = false;
+
   //Format: SOCKET_LIST = {socket.id:socket, socket.id:socket, ...}
   SOCKET_LIST[socket.id] = socket;
-  console.log('socket connection');
+
+  //managing list when a player disconnects
+  socket.on('disconnect', function(){
+    console.log('disconnected:', socket.id)
+    delete SOCKET_LIST[socket.id];
+  });
+
+console.log('socket connection');
+
+for (var i in SOCKET_LIST)// display current connected users
+    console.log("Socket list:" + i)
 
   //Receive message from the client under condition 'joining' and display unique client id wanting to play poker
-  socket.on('joining', function(data){
-    console.log("User " + socket.id + " wants to play poker.");
-    //emit a message back to all clients to update button for user wanting to join
-    for(var i in SOCKET_LIST){
-      var user = SOCKET_LIST[i];
-      //data.reason = button id that was clicked on
-      user.emit('userPlaying', data.reason);
+socket.on('joining', function(data){
+  console.log("User " + socket.id + " wants to play poker.");
+  //emit a message back to all clients to update button for user wanting to join
+  for(var i in SOCKET_LIST){
+    var user = SOCKET_LIST[i];
+    //data.reason = button id that was clicked on
+    user.emit('userPlaying', data.reason);
     }
   });
 

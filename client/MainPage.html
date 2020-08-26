@@ -18,6 +18,7 @@
       }
 
       //Listen for server message of user clicking a button and update it as locked
+      //Ask server if user has already locked in at another seat
       socket.on('userPlaying',function(buttonId){
         document.getElementById(buttonId).innerText = "Locked";
       });
@@ -45,6 +46,6 @@
       <button onclick = "userClicked(this.id)" id = "firstButton"> Join </button>
       <button onclick = "userClicked(this.id)" id = "secondButton"> Join </button>
     </div>
-
+    
   </body>
 </html>
