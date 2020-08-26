@@ -38,20 +38,26 @@ console.log("Server started");
 -Code to do package communication with socket.io library
 -Whenever there is a connection the anonymous function 'function(socket)' will be called to display 'socket connection' in CMD
 */
+
+//List of unique clients connected to the server
+var SOCKET_LIST = {};
+
 var io = require('socket.io')(serv,{});
 io.sockets.on('connection', function(socket){
+  socket.id = Math.floor(1 + (1000 * Math.random()));
+  //Format: SOCKET_LIST = {socket.id:socket, socket.id:socket, ...}
+  SOCKET_LIST[socket.id] = socket;
   console.log('socket connection');
 
-  /* EXAMPLE CODE:
-  -Listens for a message under the string 'happy' and any other data passed as a second
-   parameter form the html page will be called under the anonymous function 'function(data)'
-  -This works both ways, as the client can use socket.on to receive a message from the server
-   and the server can use socket.emit to send a message to the client and vice versa
-   */
-
-  socket.on('happy', function(data){
-    console.log('Happy because ' + data.reason);
+  //Receive message from the client under condition 'joining' and display unique client id wanting to play poker
+  socket.on('joining', function(data){
+    console.log("User " + socket.id + " wants to play poker.");
+    //emit a message back to all clients to update button for user wanting to join
+    for(var i in SOCKET_LIST){
+      var user = SOCKET_LIST[i];
+      //data.reason = button id that was clicked on
+      user.emit('userPlaying', data.reason);
+    }
   });
-  
 
-})
+});
