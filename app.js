@@ -39,21 +39,55 @@ console.log("Server started");
 -Whenever there is a connection the anonymous function 'function(socket)' will be called to display 'socket connection' in CMD
 */
 
+
 //List of unique clients connected to the server
 var SOCKET_LIST = {};
 
+//List of clients at seats
+const numSeats = 2; //number of seats as constant - can modify numSeats easily
+var playerSeats = [];
+for (i = 0; i < numSeats; i++){
+  playerSeats.push(0); // 0 represents empty seat - no client socket id can have value 0
+  //console.log(playerSeats[i]);
+} 
+
+function updateLobbyState(){ //updates lobby info for users
+  for(var i in SOCKET_LIST){
+    var user = SOCKET_LIST[i];
+    //data.reason = button id that was clicked on
+    user.emit('LobbyState', playerSeats);
+    }
+}
+
+
+
+
+/*####### 
+Main
+#######*/
+
+//server startup
 var io = require('socket.io')(serv,{});
+// user connection event
 io.sockets.on('connection', function(socket){
   socket.id = Math.floor(1 + (1000 * Math.random()));
   socket.atSeat = false;
 
   //Format: SOCKET_LIST = {socket.id:socket, socket.id:socket, ...}
   SOCKET_LIST[socket.id] = socket;
-
+  updateLobbyState();
+  
   //managing list when a player disconnects
   socket.on('disconnect', function(){
     console.log('disconnected:', socket.id)
+    for (p in playerSeats){
+    
+      if ( playerSeats[p] == socket.id){
+        playerSeats[p] = 0;
+      }
+    }
     delete SOCKET_LIST[socket.id];
+    updateLobbyState();
   });
 
 console.log('socket connection');
@@ -64,12 +98,32 @@ for (var i in SOCKET_LIST)// display current connected users
   //Receive message from the client under condition 'joining' and display unique client id wanting to play poker
 socket.on('joining', function(data){
   console.log("User " + socket.id + " wants to play poker.");
+  if (socket.atSeat == false){ //prevent locking into seat if already in other seat
+    if (data.reason == "seat1"){
+      playerSeats[0] = socket.id;
+      socket.atSeat = true;
+    }
+    else{
+      playerSeats[1] = socket.id;
+      socket.atSeat = true;
+    }
+  }
+  console.dir("Player seats: " + playerSeats);
+  
+
+
   //emit a message back to all clients to update button for user wanting to join
-  for(var i in SOCKET_LIST){
+  updateLobbyState();
+ /* for(var i in SOCKET_LIST){
     var user = SOCKET_LIST[i];
     //data.reason = button id that was clicked on
     user.emit('userPlaying', data.reason);
     }
+    */
   });
+/*
+for (var i in SOCKET_LIST){
+    socket.emit
+}*/
 
 });
