@@ -56,20 +56,30 @@ io.sockets.on('connection', function(socket){
     delete SOCKET_LIST[socket.id];
   });
 
-console.log('socket connection');
+  console.log('socket connection');
 
-for (var i in SOCKET_LIST)// display current connected users
+  for (var i in SOCKET_LIST)// display current connected users
     console.log("Socket list:" + i)
 
   //Receive message from the client under condition 'joining' and display unique client id wanting to play poker
-socket.on('joining', function(data){
-  console.log("User " + socket.id + " wants to play poker.");
-  //emit a message back to all clients to update button for user wanting to join
-  for(var i in SOCKET_LIST){
-    var user = SOCKET_LIST[i];
-    //data.reason = button id that was clicked on
-    user.emit('userPlaying', data.reason);
+  socket.on('joining', function(data){
+    console.log("User " + socket.id + " wants to play poker.");
+    //emit a message back to all clients to update button for user wanting to join
+    for(var i in SOCKET_LIST){
+      //data.reason = button id that was clicked on
+      SOCKET_LIST[i].emit('userPlaying', data.reason);
+      }
+    });
+
+
+
+  //Game chat server response to update all clients with new chat messages
+  socket.on('sendMsgToServer', function(data){
+    console.log(data);
+    for(var i in SOCKET_LIST){
+      SOCKET_LIST[i].emit('addToChat', socket.id + ': ' + data);
     }
+
   });
 
 });

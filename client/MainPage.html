@@ -3,7 +3,7 @@
   <head>
     <meta charset = "utf-8">
     <!-- Script for websocket communication, using the socket.io library to request a certain file-->
-    <script src = "https://cdn.socket.io/socket.io-1.4.5.js">
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.5.1/socket.io.min.js">
     </script>
     <!-- second script to initialize websocket connection between client and server-->
     <script>
@@ -15,7 +15,7 @@
         socket.emit('joining', {
           reason: buttonId
         });
-      }
+      };
 
       //Listen for server message of user clicking a button and update it as locked
       //Ask server if user has already locked in at another seat
@@ -35,6 +35,25 @@
         }
       }, 1000/30);
 
+      /*#################
+      ##   GAME CHAT   ##
+      #################*/
+
+      //Listen for server messages to update the chat for the client
+      socket.on('addToChat', function(data){
+        var chatText = document.getElementById('chat-text');
+        chatText.innerHTML += "<div>" + data + "</div>";
+      });
+
+      //Called when the form is submitted, sends a message to the server to add any messages the user has into the chat box
+      function userSubmission()
+      {
+        var chatInput = document.getElementById("chat-input").value;
+        socket.emit('sendMsgToServer', chatInput);
+        //Prevent user from refreshing the page (disconnecting) when pressing enter to submit chat
+        return false;
+      }
+
     </script>
   </head>
 
@@ -46,6 +65,16 @@
       <button onclick = "userClicked(this.id)" id = "firstButton"> Join </button>
       <button onclick = "userClicked(this.id)" id = "secondButton"> Join </button>
     </div>
-    
+    <br>
+
+    <!-- Game chat html tags -->
+    <div id = "chat-text" style = "width: 500px; height: 100px; overflow-y:scroll">
+      <div>Welcome!</div>
+    </div>
+
+    <form onsubmit = "return userSubmission();">
+      <input id = "chat-input" type = "text" style = "width: 500px;"></input>
+    </form>
+
   </body>
 </html>
