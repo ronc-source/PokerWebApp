@@ -3,38 +3,85 @@
   <head>
     <meta charset = "utf-8">
     <!-- Script for websocket communication, using the socket.io library to request a certain file-->
-    <script src = "https://cdn.socket.io/socket.io-1.4.5.js">
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.5.1/socket.io.min.js">
     </script>
     <!-- second script to initialize websocket connection between client and server-->
     <script>
       //Important code to setup a socket connection for whoever accesses the client web page
       var socket = io();
 
-      /*EXAMPLE CODE
-      -send messages to the server under the string 'happy'
+      //variable function to be used to send message to the server from clicking the button (Passes button id as paraemeter)
+      var userClicked = function(buttonId){
+        //users cannot click on a seat thats already "locked in" -> wont send msg to server
+        if (document.getElementById(buttonId).innerText != "Locked"){
+          socket.emit('joining', {
+          reason: buttonId
+        });
+        }
+      }
 
-      socket.emit('happy', {
-        reason: 'Its my birthday'
+
+      socket.on('LobbyState',function(seatsList){
+        for (var i = 0; i < seatsList.length; i++){
+          console.log(seatsList[i]);
+          generateButtId = "seat" + (i + 1);
+          if (seatsList[i] == 0){ //seat is empty
+            document.getElementById(generateButtId).innerText = "Join";
+          }
+          else{ //seat is being used
+            document.getElementById(generateButtId).innerText = "Locked";
+          }
+        }
+
+        //Update the 'waiting...' text to 'ready' and vice versa
+        var firstButton = document.getElementById("seat1");
+        var secondButton = document.getElementById("seat2");
+
+        if(firstButton.innerText == secondButton.innerText && firstButton.innerText == "Locked")
+        {
+          document.getElementById("loadingText").innerText = "Ready";
+        }
+        else{
+          document.getElementById("loadingText").innerText = "Waiting...";
+        }
+
       });
 
-      */
+      //Listen for server messages to update the chat for the client
+      socket.on('addToChat', function(data){
+        var chatText = document.getElementById('chat-text');
+        chatText.innerHTML += "<div>" + data + "</div>";
+      });
 
-      /*EXAMPLE CODE
-      - Function to send messages to the server; will be used with a button to send these messages
-      */
-      var happy = function(){
-        socket.emit('happy', {
-          reason: 'Its my birthday'
-        });
+      //Called when the form is submitted, sends a message to the server to add any messages the user has into the chat box
+      function userSubmission()
+      {
+        var chatInput = document.getElementById("chat-input").value;
+        socket.emit('sendMsgToServer', chatInput);
+        //Prevent user from refreshing the page (disconnecting) when pressing enter to submit chat
+        return false;
       }
+
 
     </script>
   </head>
 
   <body>
-    <!-- Call the variable assigned function 'happy' when the button is clicked to send a message to the server -->
-    <button onclick = "happy()">
-      Happy
-    </button>
+    <!-- Testing div block for basic_server_logic -->
+    <div>
+      <strong id = "loadingText"> Waiting... </strong>
+      <br>
+      <button onclick = "userClicked(this.id)" id = "seat1"> Join </button>
+      <button onclick = "userClicked(this.id)" id = "seat2"> Join </button>
+    </div>
+
+    <!-- Game chat html tags -->
+    <div id = "chat-text" style = "width: 500px; height: 100px; overflow-y:scroll">
+      <div>Welcome!</div>
+    </div>
+    <form onsubmit = "return userSubmission();">
+      <input id = "chat-input" type = "text" style = "width: 500px;"></input>
+    </form>
+
   </body>
 </html>
