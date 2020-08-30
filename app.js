@@ -90,29 +90,29 @@ io.sockets.on('connection', function(socket){
     updateLobbyState();
   });
 
-console.log('socket connection');
+  console.log('socket connection');
 
-for (var i in SOCKET_LIST)// display current connected users
-    console.log("Socket list:" + i)
+  for (var i in SOCKET_LIST)// display current connected users
+      console.log("Socket list:" + i)
 
   //Receive message from the client under condition 'joining' and display unique client id wanting to play poker
-socket.on('joining', function(data){
-  console.log("User " + socket.id + " wants to play poker.");
-  if (socket.atSeat == false){ //prevent locking into seat if already in other seat
-    if (data.reason == "seat1"){
-      playerSeats[0] = socket.id;
-      socket.atSeat = true;
+  socket.on('joining', function(data){
+    console.log("User " + socket.id + " wants to play poker.");
+    if (socket.atSeat == false){ //prevent locking into seat if already in other seat
+      if (data.reason == "seat1"){
+        playerSeats[0] = socket.id;
+        socket.atSeat = true;
+      }
+      else{
+        playerSeats[1] = socket.id;
+        socket.atSeat = true;
+      }
     }
-    else{
-      playerSeats[1] = socket.id;
-      socket.atSeat = true;
-    }
-  }
-  console.dir("Player seats: " + playerSeats);
+    console.dir("Player seats: " + playerSeats);
 
-  socket.on('join1', function(data){
-    console.log('Player joined: ' + data.reason);
-  });
+    socket.on('join1', function(data){
+      console.log('Player joined: ' + data.reason);
+    });
 
 
   //emit a message back to all clients to update button for user wanting to join
