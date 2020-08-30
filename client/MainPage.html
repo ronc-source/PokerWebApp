@@ -13,14 +13,14 @@
       //variable function to be used to send message to the server from clicking the button (Passes button id as paraemeter)
       var userClicked = function(buttonId){
         //users cannot click on a seat thats already "locked in" -> wont send msg to server
-        if (document.getElementById(buttonId).innerText != "Locked"){ 
+        if (document.getElementById(buttonId).innerText != "Locked"){
           socket.emit('joining', {
           reason: buttonId
         });
         }
       }
 
-      
+
       socket.on('LobbyState',function(seatsList){
         for (var i = 0; i < seatsList.length; i++){
           console.log(seatsList[i]);
@@ -36,7 +36,7 @@
         //Update the 'waiting...' text to 'ready' and vice versa
         var firstButton = document.getElementById("seat1");
         var secondButton = document.getElementById("seat2");
-        
+
         if(firstButton.innerText == secondButton.innerText && firstButton.innerText == "Locked")
         {
           document.getElementById("loadingText").innerText = "Ready";
@@ -44,21 +44,25 @@
         else{
           document.getElementById("loadingText").innerText = "Waiting...";
         }
-        
+
       });
-      /*
-      //Will constantly run for 30fps to check if both buttons are locked
-      setInterval(function(){
-        var firstButton = document.getElementById("seat1");
-        var secondButton = document.getElementById("seat2");
-        //Update the 'waiting...'' text to 'ready'
-        if(firstButton.innerText == secondButton.innerText && firstButton.innerText == "Locked")
-        {
-          document.getElementById("loadingText").innerText = "Ready";
-          clearInterval();
-        }
-      }, 1000/30);
-      */
+
+      //Listen for server messages to update the chat for the client
+      socket.on('addToChat', function(data){
+        var chatText = document.getElementById('chat-text');
+        chatText.innerHTML += "<div>" + data + "</div>";
+      });
+
+      //Called when the form is submitted, sends a message to the server to add any messages the user has into the chat box
+      function userSubmission()
+      {
+        var chatInput = document.getElementById("chat-input").value;
+        socket.emit('sendMsgToServer', chatInput);
+        //Prevent user from refreshing the page (disconnecting) when pressing enter to submit chat
+        return false;
+      }
+
+
     </script>
   </head>
 
@@ -70,6 +74,14 @@
       <button onclick = "userClicked(this.id)" id = "seat1"> Join </button>
       <button onclick = "userClicked(this.id)" id = "seat2"> Join </button>
     </div>
-    
+
+    <!-- Game chat html tags -->
+    <div id = "chat-text" style = "width: 500px; height: 100px; overflow-y:scroll">
+      <div>Welcome!</div>
+    </div>
+    <form onsubmit = "return userSubmission();">
+      <input id = "chat-input" type = "text" style = "width: 500px;"></input>
+    </form>
+
   </body>
 </html>

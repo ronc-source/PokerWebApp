@@ -49,7 +49,7 @@ var playerSeats = [];
 for (i = 0; i < numSeats; i++){
   playerSeats.push(0); // 0 represents empty seat - no client socket id can have value 0
   //console.log(playerSeats[i]);
-} 
+}
 
 function updateLobbyState(){ //updates lobby info for users
   for(var i in SOCKET_LIST){
@@ -62,7 +62,7 @@ function updateLobbyState(){ //updates lobby info for users
 
 
 
-/*####### 
+/*#######
 Main
 #######*/
 
@@ -76,12 +76,12 @@ io.sockets.on('connection', function(socket){
   //Format: SOCKET_LIST = {socket.id:socket, socket.id:socket, ...}
   SOCKET_LIST[socket.id] = socket;
   updateLobbyState();
-  
+
   //managing list when a player disconnects
   socket.on('disconnect', function(){
     console.log('disconnected:', socket.id)
     for (p in playerSeats){
-    
+
       if ( playerSeats[p] == socket.id){
         playerSeats[p] = 0;
       }
@@ -90,40 +90,37 @@ io.sockets.on('connection', function(socket){
     updateLobbyState();
   });
 
-console.log('socket connection');
+  console.log('socket connection');
 
-for (var i in SOCKET_LIST)// display current connected users
-    console.log("Socket list:" + i)
+  for (var i in SOCKET_LIST)// display current connected users
+      console.log("Socket list:" + i)
 
   //Receive message from the client under condition 'joining' and display unique client id wanting to play poker
-socket.on('joining', function(data){
-  console.log("User " + socket.id + " wants to play poker.");
-  if (socket.atSeat == false){ //prevent locking into seat if already in other seat
-    if (data.reason == "seat1"){
-      playerSeats[0] = socket.id;
-      socket.atSeat = true;
+  socket.on('joining', function(data){
+    console.log("User " + socket.id + " wants to play poker.");
+    if (socket.atSeat == false){ //prevent locking into seat if already in other seat
+      if (data.reason == "seat1"){
+        playerSeats[0] = socket.id;
+        socket.atSeat = true;
+      }
+      else{
+        playerSeats[1] = socket.id;
+        socket.atSeat = true;
+      }
     }
-    else{
-      playerSeats[1] = socket.id;
-      socket.atSeat = true;
-    }
-  }
-  console.dir("Player seats: " + playerSeats);
-  
+    console.dir("Player seats: " + playerSeats);
+
 
 
   //emit a message back to all clients to update button for user wanting to join
   updateLobbyState();
- /* for(var i in SOCKET_LIST){
-    var user = SOCKET_LIST[i];
-    //data.reason = button id that was clicked on
-    user.emit('userPlaying', data.reason);
-    }
-    */
   });
-/*
-for (var i in SOCKET_LIST){
-    socket.emit
-}*/
+
+  //Game chat server response to update all clients with new chat messages
+  socket.on('sendMsgToServer', function(data){
+    for(var i in SOCKET_LIST){
+      SOCKET_LIST[i].emit('addToChat', socket.id + ': ' + data);
+    }
+  });
 
 });
