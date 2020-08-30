@@ -12,28 +12,40 @@
 
       //variable function to be used to send message to the server from clicking the button (Passes button id as paraemeter)
       var userClicked = function(buttonId){
-        socket.emit('joining', {
+        //users cannot click on a seat thats already "locked in" -> wont send msg to server
+        if (document.getElementById(buttonId).innerText != "Locked"){
+          socket.emit('joining', {
           reason: buttonId
         });
+        }
       };
 
-      //Listen for server message of user clicking a button and update it as locked
-      //Ask server if user has already locked in at another seat
-      socket.on('userPlaying',function(buttonId){
-        document.getElementById(buttonId).innerText = "Locked";
-      });
 
-      //Will constantly run for 30fps to check if both buttons are locked
-      setInterval(function(){
-        var firstButton = document.getElementById("firstButton");
-        var secondButton = document.getElementById("secondButton");
-        //Update the 'waiting...'' text to 'ready'
+      socket.on('LobbyState',function(seatsList){
+        for (var i = 0; i < seatsList.length; i++){
+          console.log(seatsList[i]);
+          generateButtId = "seat" + (i + 1);
+          if (seatsList[i] == 0){ //seat is empty
+            document.getElementById(generateButtId).innerText = "Join";
+          }
+          else{ //seat is being used
+            document.getElementById(generateButtId).innerText = "Locked";
+          }
+        }
+
+        //Update the 'waiting...' text to 'ready' and vice versa
+        var firstButton = document.getElementById("seat1");
+        var secondButton = document.getElementById("seat2");
+
         if(firstButton.innerText == secondButton.innerText && firstButton.innerText == "Locked")
         {
           document.getElementById("loadingText").innerText = "Ready";
-          clearInterval();
         }
-      }, 1000/30);
+        else{
+          document.getElementById("loadingText").innerText = "Waiting...";
+        }
+
+      });
 
       /*#################
       ##   GAME CHAT   ##
@@ -62,10 +74,9 @@
     <div>
       <strong id = "loadingText"> Waiting... </strong>
       <br>
-      <button onclick = "userClicked(this.id)" id = "firstButton"> Join </button>
-      <button onclick = "userClicked(this.id)" id = "secondButton"> Join </button>
+      <button onclick = "userClicked(this.id)" id = "seat1"> Join </button>
+      <button onclick = "userClicked(this.id)" id = "seat2"> Join </button>
     </div>
-    <br>
 
     <!-- Game chat html tags -->
     <div id = "chat-text" style = "width: 500px; height: 100px; overflow-y:scroll">
