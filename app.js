@@ -110,8 +110,6 @@ io.sockets.on('connection', function(socket){
     }
     console.dir("Player seats: " + playerSeats);
 
-
-
   //emit a message back to all clients to update button for user wanting to join
   updateLobbyState();
   });
@@ -124,3 +122,9 @@ io.sockets.on('connection', function(socket){
   });
 
 });
+/*
+Trying to test Deck class
+
+var testDeck = require('./Deck.js');
+var deck1 = testDeck.constructor();
+console.dir(deck1.deck.length);*/
