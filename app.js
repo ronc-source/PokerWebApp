@@ -39,9 +39,17 @@ console.log("Server started");
 -Whenever there is a connection the anonymous function 'function(socket)' will be called to display 'socket connection' in CMD
 */
 
+/*#######
+Core Variables
+#######*/
 
 //List of unique clients connected to the server
 var SOCKET_LIST = {};
+
+//Setup deck class for use and shuffle cards
+const Deck = require('./Deck.js');
+var mainDeck = new Deck();
+mainDeck.shuffle();
 
 //List of clients at seats
 const numSeats = 2; //number of seats as constant - can modify numSeats easily
@@ -120,6 +128,23 @@ io.sockets.on('connection', function(socket){
       SOCKET_LIST[i].emit('addToChat', socket.id + ': ' + data);
     }
   });
+
+
+  //Listening for the server to start the game
+  socket.on('startGame', function(data){
+    //Add 2 cards from the top of the deck to each user in the player seats
+    for(var a in playerSeats){
+      for(var b in SOCKET_LIST){
+        if(playerSeats[a] == b){
+          SOCKET_LIST[b].emit('addStartingCards', mainDeck.drawTop());
+          SOCKET_LIST[b].emit('addStartingCards', mainDeck.drawTop());
+        }
+      }
+    }
+
+  });
+
+
 
 });
 /*
