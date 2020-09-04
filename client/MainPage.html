@@ -77,16 +77,12 @@
           var secondCard = document.getElementById("second-card");
 
           //If user is not given a number card
-          if(isNaN(myCards[0]["value"])){
-            firstCard.src = "/client/img/cards_png/" + myCards[0]["value"][0] + myCards[0]["suit"][0] + ".png";
-          } else {
-            firstCard.src = "/client/img/cards_png/" + myCards[0]["value"] + myCards[0]["suit"][0] + ".png";
-          }
 
-          if(isNaN(myCards[1]["value"])){
-            secondCard.src = "/client/img/cards_png/" + myCards[1]["value"][0] + myCards[1]["suit"][0] + ".png";
-          } else {
-            secondCard.src = "/client/img/cards_png/" + myCards[1]["value"] + myCards[1]["suit"][0] + ".png";
+          //PROBLEM: myCards[0] == null after 6-8 refreshes
+
+          if(myCards[0] != null){
+              firstCard.src = "/client/img/cards_png/" + myCards[0]["value"] + myCards[0]["suit"] + ".png";
+              secondCard.src = "/client/img/cards_png/" + myCards[1]["value"] + myCards[1]["suit"]+ ".png";
           }
         }
 

@@ -2,8 +2,8 @@ class Deck {
     constructor() {
       this.deck = [];
 
-      const suits = ['Hearts', 'Spades', 'Clubs', 'Diamonds'];
-      const values = ['Ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King'];
+      const suits = ['H', 'S', 'C', 'D'];
+      const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
       for (var s in suits) {
         for (var v in values) {
@@ -42,6 +42,10 @@ class Deck {
         this.deck.pop();
 
         return topCard;
+    }
+
+    deckSize(){
+      return this.deck.length;
     }
 
 
