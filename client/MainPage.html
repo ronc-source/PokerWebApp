@@ -9,6 +9,8 @@
     <script>
       //Important code to setup a socket connection for whoever accesses the client web page
       var socket = io();
+      //Users cards for the game
+      var myCards = [];
 
       //variable function to be used to send message to the server from clicking the button (Passes button id as paraemeter)
       var userClicked = function(buttonId){
@@ -40,6 +42,8 @@
         if(firstButton.innerText == secondButton.innerText && firstButton.innerText == "Locked")
         {
           document.getElementById("loadingText").innerText = "Ready";
+          //Send a message to the server to start the game
+          socket.emit('startGame', "");
         }
         else{
           document.getElementById("loadingText").innerText = "Waiting...";
@@ -62,26 +66,105 @@
         return false;
       }
 
+      //Listen for the message 'addStartingCards' to distribute shuffled cards to the client
+      socket.on('addStartingCards', function(data){
+        //Item format in myCards: { value: 'Ace', suit: 'Clubs' }
+        myCards.push(data);
+
+        //Display 2 cards to the users
+        if(myCards.length == 2){
+          var firstCard = document.getElementById("first-card");
+          var secondCard = document.getElementById("second-card");
+
+          //If user is not given a number card
+
+          //PROBLEM: myCards[0] == null after 6-8 refreshes
+
+          if(myCards[0] != null){
+              firstCard.src = "/client/img/cards_png/" + myCards[0]["value"] + myCards[0]["suit"] + ".png";
+              secondCard.src = "/client/img/cards_png/" + myCards[1]["value"] + myCards[1]["suit"]+ ".png";
+          }
+        }
+
+      });
+
+
+
 
     </script>
+
+    <!-- CSS Code -->
+    <style>
+
+      .container{
+        position: relative;
+      }
+
+      .container .display{
+        position: absolute;
+        left: 380px;
+      }
+
+      .container .btn1 {
+        position: absolute;
+        left: 385px;
+        top: 300px;
+      }
+
+      .container .btn2 {
+        position: absolute;
+        left: 650px;
+        top: 200px;
+      }
+
+      .container .chips{
+        position: absolute;
+        width: 75px;
+        height: 75px;
+        top: 430px;
+      }
+
+    </style>
+
   </head>
 
   <body>
-    <!-- Testing div block for basic_server_logic -->
-    <div>
-      <strong id = "loadingText"> Waiting... </strong>
-      <br>
-      <button onclick = "userClicked(this.id)" id = "seat1"> Join </button>
-      <button onclick = "userClicked(this.id)" id = "seat2"> Join </button>
-    </div>
+    <div class = "container">
 
-    <!-- Game chat html tags -->
-    <div id = "chat-text" style = "width: 500px; height: 100px; overflow-y:scroll">
-      <div>Welcome!</div>
-    </div>
-    <form onsubmit = "return userSubmission();">
-      <input id = "chat-input" type = "text" style = "width: 500px;"></input>
-    </form>
+      <!-- Lobby HTML contents and poker table -->
+      <div>
+        <h2 id = "loadingText" class = "display"> Waiting... </h2>
+        <img src = "/client/img/GameTable.jpg">
+        <button onclick = "userClicked(this.id)" id = "seat1" class = "btn1"> Join </button>
+        <button onclick = "userClicked(this.id)" id = "seat2" class = "btn2"> Join </button>
+      </div>
+
+      <!-- Display cards and chips for the user -->
+      <div>
+        <strong>Your Cards</strong>
+        <br>
+        <img id = "first-card" style = "width: 100px; height: 150px;">
+        <img id = "second-card" style = "width: 100px; height: 150px;">
+
+        <div>
+          <img src = "/client/img/BlackChip.jpg" class = "chips" style = "left: 250px;">
+          <img src = "/client/img/BlueChip.jpg" class = "chips" style = "left: 360px;">
+          <img src = "/client/img/GreenChip.PNG" class = "chips" style = "left: 470px;">
+          <img src = "/client/img/RedChip.png" class = "chips" style = "left: 580px;">
+          <img src = "/client/img/WhiteChip.png" class = "chips" style = "left: 690px;">
+        </div>
+        <br>
+      </div>
+
+      <!-- Game chat html tags -->
+      <div id = "chat-text" style = "width: 500px; height: 100px; overflow-y:scroll; border-style: solid;">
+        <div>Welcome!</div>
+      </div>
+      <form onsubmit = "return userSubmission();">
+        <input id = "chat-input" type = "text" style = "width: 500px;"></input>
+      </form>
+
+  </div>
 
   </body>
 </html>
