@@ -92,34 +92,79 @@
 
 
     </script>
+
+    <!-- CSS Code -->
+    <style>
+
+      .container{
+        position: relative;
+      }
+
+      .container .display{
+        position: absolute;
+        left: 380px;
+      }
+
+      .container .btn1 {
+        position: absolute;
+        left: 385px;
+        top: 300px;
+      }
+
+      .container .btn2 {
+        position: absolute;
+        left: 650px;
+        top: 200px;
+      }
+
+      .container .chips{
+        position: absolute;
+        width: 75px;
+        height: 75px;
+        top: 430px;
+      }
+
+    </style>
+
   </head>
 
   <body>
-    <!-- Lobby HTML contents -->
-    <div>
-      <strong id = "loadingText"> Waiting... </strong>
-      <br>
-      <button onclick = "userClicked(this.id)" id = "seat1"> Join </button>
-      <button onclick = "userClicked(this.id)" id = "seat2"> Join </button>
-    </div>
+    <div class = "container">
 
-    <!-- Display cards for the user -->
-    <div>
-      <br>
-      <strong>Your Cards</strong>
-      <br>
-      <img id = "first-card" style = "width: 100px; height: 150px;">
-      <img id = "second-card" style = "width: 100px; height: 150px;">
-      <br>
-    </div>
+      <!-- Lobby HTML contents and poker table -->
+      <div>
+        <h2 id = "loadingText" class = "display"> Waiting... </h2>
+        <img src = "/client/img/GameTable.jpg">
+        <button onclick = "userClicked(this.id)" id = "seat1" class = "btn1"> Join </button>
+        <button onclick = "userClicked(this.id)" id = "seat2" class = "btn2"> Join </button>
+      </div>
 
-    <!-- Game chat html tags -->
-    <div id = "chat-text" style = "width: 500px; height: 100px; overflow-y:scroll">
-      <div>Welcome!</div>
-    </div>
-    <form onsubmit = "return userSubmission();">
-      <input id = "chat-input" type = "text" style = "width: 500px;"></input>
-    </form>
+      <!-- Display cards and chips for the user -->
+      <div>
+        <strong>Your Cards</strong>
+        <br>
+        <img id = "first-card" style = "width: 100px; height: 150px;">
+        <img id = "second-card" style = "width: 100px; height: 150px;">
+
+        <div>
+          <img src = "/client/img/BlackChip.jpg" class = "chips" style = "left: 250px;">
+          <img src = "/client/img/BlueChip.jpg" class = "chips" style = "left: 360px;">
+          <img src = "/client/img/GreenChip.PNG" class = "chips" style = "left: 470px;">
+          <img src = "/client/img/RedChip.png" class = "chips" style = "left: 580px;">
+          <img src = "/client/img/WhiteChip.png" class = "chips" style = "left: 690px;">
+        </div>
+        <br>
+      </div>
+
+      <!-- Game chat html tags -->
+      <div id = "chat-text" style = "width: 500px; height: 100px; overflow-y:scroll; border-style: solid;">
+        <div>Welcome!</div>
+      </div>
+      <form onsubmit = "return userSubmission();">
+        <input id = "chat-input" type = "text" style = "width: 500px;"></input>
+      </form>
+
+  </div>
 
   </body>
 </html>
